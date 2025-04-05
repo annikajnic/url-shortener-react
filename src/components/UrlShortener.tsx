@@ -18,19 +18,42 @@ const UrlShortener: React.FC = () => {
         },
         data: JSON.stringify({ longUrl: inputValue.trim() }),
       })
-      setShortUrl(response.data)
+      console.log(response.data['shortUrl'])
+      setShortUrl(response.data['shortUrl'])
     } catch (error) {
       console.error(error)
     }
   }
 
+  console.log(shortUrl)
+
   return (
     <>
-      <input onChange={handleChange} type="text" placeholder="Enter URL" />
-      <button onClick={handleShorten}>Shorten</button>
+      <input
+        style={{
+          width: '500px',
+          padding: '10px',
+          borderRadius: '5px',
+          display: 'inline',
+        }}
+        onChange={handleChange}
+        type="text"
+        placeholder="Enter URL"
+      />
+      <button
+        style={{
+          display: 'inline',
+          padding: '10px',
+          borderRadius: '5px',
+          margin: '10px',
+        }}
+        onClick={handleShorten}
+      >
+        Shorten
+      </button>
       {shortUrl && (
         <p>
-          <a href={shortUrl}>{shortUrl}</a>
+          <a href={`/${shortUrl}`}>{shortUrl}</a>
         </p>
       )}
     </>
