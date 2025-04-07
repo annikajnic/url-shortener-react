@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../api/axios'
+import { Button, Group, Input } from '@mantine/core'
 
 const UrlShortener: React.FC = () => {
   const [inputValue, setInputValue] = useState('')
@@ -10,53 +11,42 @@ const UrlShortener: React.FC = () => {
   }
 
   async function handleShorten() {
+    if (inputValue.length === 0) return
+    setInputValue('')
     try {
       const response = await api.post('/shorten', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        data: JSON.stringify({ longUrl: inputValue.trim() }),
+
+        data: { longUrl: inputValue.trim() },
       })
-      console.log(response.data['shortUrl'])
       setShortUrl(response.data['shortUrl'])
     } catch (error) {
       console.error(error)
     }
   }
 
-  console.log(shortUrl)
-
   return (
-    <>
-      <input
+    <Group>
+      <Input
         style={{
           width: '500px',
           padding: '10px',
           borderRadius: '5px',
-          display: 'inline',
         }}
         onChange={handleChange}
         type="text"
         placeholder="Enter URL"
       />
-      <button
-        style={{
-          display: 'inline',
-          padding: '10px',
-          borderRadius: '5px',
-          margin: '10px',
-        }}
-        onClick={handleShorten}
-      >
-        Shorten
-      </button>
+      <Button onClick={handleShorten}>Shorten</Button>
       {shortUrl && (
-        <p>
-          <a href={`/${shortUrl}`}>{shortUrl}</a>
+        <p style={{ color: 'white' }}>
+          <a href={`http://localhost:2000/api/${shortUrl}`}>{shortUrl}</a>
         </p>
       )}
-    </>
+    </Group>
   )
 }
 export default UrlShortener
