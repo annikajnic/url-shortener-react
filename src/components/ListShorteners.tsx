@@ -1,5 +1,5 @@
 import { format, isAfter } from 'date-fns'
-import { Container, Table } from '@mantine/core'
+import { Container, Table, Anchor } from '@mantine/core'
 
 export interface Link {
   shortUrl: string
@@ -15,7 +15,7 @@ const ListShorteners: React.FC<{ linkList: Link[] }> = ({ linkList }) => {
   return (
     <Container size={'xl'}>
       {filteredLinks.length > 0 && (
-        <Table>
+        <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Link</Table.Th>
@@ -24,13 +24,16 @@ const ListShorteners: React.FC<{ linkList: Link[] }> = ({ linkList }) => {
           </Table.Thead>
           <tbody>
             {filteredLinks.map(link => {
-              console.log(link)
               return (
                 <Table.Tr key={link.shortUrl}>
                   <Table.Td>
-                    <a href={`http://localhost:2000/api/${link.shortUrl}`}>
+                    <Anchor
+                      target="_blank"
+                      rel="noreferrer"
+                      href={`http://localhost:2000/api/${link.shortUrl}`}
+                    >
                       {link.shortUrl}
-                    </a>
+                    </Anchor>
                   </Table.Td>
                   <Table.Td>
                     {format(new Date(link.expiresAt), 'MMM d, yyyy HH:mm a')}
