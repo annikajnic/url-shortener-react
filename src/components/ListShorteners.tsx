@@ -1,61 +1,47 @@
-import { useEffect, useState } from 'react'
-import { api } from '../api/axios'
-import { format } from 'date-fns'
-import { Table } from '@mantine/core'
+import { format, isAfter } from 'date-fns'
+import { Container, Table } from '@mantine/core'
 
-interface Link {
+export interface Link {
   shortUrl: string
   longUrl: string
   expiresAt: Date
   createdAt: Date
 }
 
-const ListShorteners: React.FC = () => {
-  const [linkList, setLinkList] = useState<Link[]>([])
-
-  async function getLinkList() {
-    try {
-      const response = await api.request({ method: 'GET', url: '/links' })
-      setLinkList(response.data)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    getLinkList()
-  }, [])
-
+const ListShorteners: React.FC<{ linkList: Link[] }> = ({ linkList }) => {
+  const filteredLinks = linkList.filter(link =>
+    isAfter(new Date(link.expiresAt), new Date()),
+  )
   return (
-    <>
-      {linkList.length > 0 && (
+    <Container size={'xl'}>
+      {filteredLinks.length > 0 && (
         <Table>
-          <thead>
-            <tr>
-              <th>Link</th>
-              <th>Expiry</th>
-            </tr>
-          </thead>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Link</Table.Th>
+              <Table.Th>Expiry</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
           <tbody>
-            {linkList.map(link => {
+            {filteredLinks.map(link => {
               console.log(link)
               return (
-                <tr key={link.shortUrl}>
-                  <td>
+                <Table.Tr key={link.shortUrl}>
+                  <Table.Td>
                     <a href={`http://localhost:2000/api/${link.shortUrl}`}>
                       {link.shortUrl}
                     </a>
-                  </td>
-                  <td>
-                    {format(new Date(link.expiresAt), 'yyyy-MM-dd HH:mm a')}
-                  </td>
-                </tr>
+                  </Table.Td>
+                  <Table.Td>
+                    {format(new Date(link.expiresAt), 'MMM d, yyyy HH:mm a')}
+                  </Table.Td>
+                </Table.Tr>
               )
             })}
           </tbody>
         </Table>
       )}
-    </>
+    </Container>
   )
 }
 export default ListShorteners

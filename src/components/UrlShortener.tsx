@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { api } from '../api/axios'
 import { Button, Group, Input } from '@mantine/core'
 
-const UrlShortener: React.FC = () => {
+const UrlShortener: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [inputValue, setInputValue] = useState('')
-  const [shortUrl, setShortUrl] = useState('')
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(event.target.value)
@@ -14,15 +13,18 @@ const UrlShortener: React.FC = () => {
     if (inputValue.length === 0) return
     setInputValue('')
     try {
-      const response = await api.post('/shorten', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      await api
+        .post('/shorten', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
 
-        data: { longUrl: inputValue.trim() },
-      })
-      setShortUrl(response.data['shortUrl'])
+          data: { longUrl: inputValue.trim() },
+        })
+        .then(() => {
+          onComplete()
+        })
     } catch (error) {
       console.error(error)
     }
@@ -41,11 +43,6 @@ const UrlShortener: React.FC = () => {
         placeholder="Enter URL"
       />
       <Button onClick={handleShorten}>Shorten</Button>
-      {shortUrl && (
-        <p style={{ color: 'white' }}>
-          <a href={`http://localhost:2000/api/${shortUrl}`}>{shortUrl}</a>
-        </p>
-      )}
     </Group>
   )
 }
